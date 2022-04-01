@@ -4,6 +4,10 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>You need permission before you can send a location.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>You need permission before you can send a location.</string>
 	<key>CFBundleDisplayName</key>
 	<string>LocationTracking</string>
 	<key>CFBundleExecutable</key>

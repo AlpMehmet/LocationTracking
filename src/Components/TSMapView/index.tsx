@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {View} from 'react-native';
 import MapView, {Marker, Polyline, Region} from 'react-native-maps';
 import BackgroundGeolocation, {
@@ -16,12 +16,17 @@ Geolocation.setRNConfiguration({
 const LATITUDE_DELTA = 0.5;
 const LONGITUDE_DELTA = 0.5;
 
-const TSMapView = () => {
+interface TSMapViewProps {
+  markersP?: any[];
+  coordinatesP?: any[];
+}
+
+function TSMapView({markersP = [], coordinatesP = []}: TSMapViewProps) {
   const [showsUserLocation, setShowsUserLocation] = useState(false);
   const [enabled, setEnabled] = useState(false);
   const [mapScrollEnabled, setMapScrollEnabled] = useState(false);
-  const [coordinates, setCoordinates] = useState<any[]>([]);
-  const [markers, setMarkers] = useState<any[]>([]);
+  const [coordinates, setCoordinates] = useState<any[]>(coordinatesP);
+  const [markers, setMarkers] = useState<any[]>(markersP);
   const [location, setLocation] = useState<Location>(null!);
   const [mapCenter, setMapCenter] = useState<Region>({
     latitude: 45.518853,
@@ -58,7 +63,6 @@ const TSMapView = () => {
     subscribe(BackgroundGeolocation.onEnabledChange(setEnabled));
 
     return () => {
-      // Important for with live-reload to remove BackgroundGeolocation event subscriptions.
       unsubscribe();
       clearMarkers();
     };
@@ -175,6 +179,6 @@ const TSMapView = () => {
       {renderMarkers()}
     </MapView>
   );
-};
+}
 
 export default TSMapView;

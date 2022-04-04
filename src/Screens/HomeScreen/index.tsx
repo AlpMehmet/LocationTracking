@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   Animated,
   SafeAreaView,
@@ -14,11 +14,20 @@ import BackgroundGeolocation, {
 } from 'react-native-background-geolocation';
 import TSMapView from '../../Components/TSMapView';
 import MovementTypeIconRenderer from '../../Components/MovementTypeIconRenderer';
+import {setLogList} from '../../Helpers/Storage';
+import {AppContext} from '../../../App';
+import {ILog} from '../../Interfaces/ILog';
+import uuid from 'react-native-uuid';
+import {MotionTypes} from '../../Enums/MotionTypes';
 
 function HomeScreen() {
+  const appContext = useContext(AppContext);
+
   const [location, setLocation] = useState<Location>();
   const [odometer, setOdometer] = useState(0);
   const [freeDriveStatus, setFreeDriveStatus] = useState(false);
+  const [coordinates, setCoordinates] = useState<any[]>(null!);
+  const [markers, setMarkers] = useState<any[]>(null!);
   const [motionActivityEvent, setMotionActivityEvent] =
     useState<MotionActivityEvent>(null!);
 
@@ -58,6 +67,12 @@ function HomeScreen() {
     }
   }, [freeDriveStatus]);
 
+  function clearData() {
+    setMarkers([]);
+    setCoordinates([]);
+    setOdometer(0);
+  }
+
   const initBackgroundGeolocation = async () => {
     const state: State = await BackgroundGeolocation.ready({
       reset: false,
@@ -84,10 +99,6 @@ function HomeScreen() {
     setOdometer(state.odometer);
   };
 
-  useEffect(() => {
-    console.log('[motiondetect]', motionActivityEvent);
-  }, [motionActivityEvent]);
-
   function freeDriveAnimate() {
     animatedScale.setValue(0.8);
     Animated.loop(
@@ -112,6 +123,20 @@ function HomeScreen() {
           BackgroundGeolocation.changePace(false);
         });
     } else {
+      const tempData: ILog = {
+        id: uuid.v4(),
+        movementType: motionActivityEvent?.activity
+          ? motionActivityEvent.activity
+          : MotionTypes.still,
+        markers,
+        km: (odometer / 1000).toFixed(1),
+        coordinates,
+      };
+      setLogList(appContext.logs ? [...appContext.logs, tempData] : [tempData]);
+      appContext.setLogs(
+        appContext.logs ? [...appContext.logs, tempData] : [tempData],
+      );
+      clearData();
       BackgroundGeolocation.stop();
     }
   };
@@ -139,13 +164,20 @@ function HomeScreen() {
           <View style={styles.driveTypeView}>
             {motionActivityEvent && (
               <MovementTypeIconRenderer
-                movementType={motionActivityEvent.activity}
+                movementType={
+                  motionActivityEvent?.activity
+                    ? motionActivityEvent.activity
+                    : MotionTypes.still
+                }
               />
             )}
           </View>
         )}
       </View>
-      <TSMapView />
+      <TSMapView
+        getMarkers={(markers: any[]) => setMarkers(markers)}
+        getCoordinates={(coordinates: any[]) => setCoordinates(coordinates)}
+      />
     </SafeAreaView>
   );
 }

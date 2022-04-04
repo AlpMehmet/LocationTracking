@@ -2,6 +2,7 @@ import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   logItem: {
+    marginBottom: 15,
     height: 200,
     width: '80%',
     alignItems: 'center',

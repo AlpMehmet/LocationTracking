@@ -19,9 +19,16 @@ const LONGITUDE_DELTA = 0.5;
 interface TSMapViewProps {
   markersP?: any[];
   coordinatesP?: any[];
+  getMarkers?: (markers: any[]) => void;
+  getCoordinates?: (coordinates: any[]) => void;
 }
 
-function TSMapView({markersP = [], coordinatesP = []}: TSMapViewProps) {
+function TSMapView({
+  markersP = [],
+  coordinatesP = [],
+  getMarkers,
+  getCoordinates,
+}: TSMapViewProps) {
   const [showsUserLocation, setShowsUserLocation] = useState(false);
   const [enabled, setEnabled] = useState(false);
   const [mapScrollEnabled, setMapScrollEnabled] = useState(false);
@@ -34,6 +41,14 @@ function TSMapView({markersP = [], coordinatesP = []}: TSMapViewProps) {
     latitudeDelta: LATITUDE_DELTA,
     longitudeDelta: LONGITUDE_DELTA,
   });
+
+  useEffect(() => {
+    getMarkers && getMarkers(markers);
+  }, [markers]);
+
+  useEffect(() => {
+    getCoordinates && getCoordinates(coordinates);
+  }, [coordinates]);
 
   const subscriptions: any[] = [];
 

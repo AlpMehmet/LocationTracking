@@ -1,9 +1,7 @@
-import {MotionTypes} from '../Enums/MotionTypes';
-
 export interface ILog {
-  id: number;
-  movementType: MotionTypes;
+  id: string | number[];
+  movementType: string;
   markers: any[];
-  km: number;
+  km: string;
   coordinates: any[];
 }

@@ -4,7 +4,7 @@ import TSMapView from '../TSMapView';
 import styles from './styles';
 
 interface LogCardComponentProps {
-  km: number;
+  km: string;
   markers: any[];
   coordinates: any[];
 }
